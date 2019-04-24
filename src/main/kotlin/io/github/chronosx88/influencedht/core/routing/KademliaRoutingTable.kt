@@ -33,7 +33,7 @@ class KademliaRoutingTable(
         @Synchronized get() {
             val nodes = ArrayList<PeerAddress>()
 
-            for (b in this.buckets!!) {
+            for (b in this.buckets) {
                 for (c in b.getContacts()) {
                     nodes.add(c.getPeerAddress())
                 }
@@ -49,7 +49,7 @@ class KademliaRoutingTable(
         get() {
             val contacts = ArrayList<PeerContact>()
 
-            for (b in this.buckets!!) {
+            for (b in this.buckets) {
                 contacts.addAll(b.getContacts())
             }
 
@@ -86,7 +86,7 @@ class KademliaRoutingTable(
      */
     @Synchronized
     fun insert(c: PeerContact) {
-        this.buckets!![this.getBucketId(c.getPeerAddress().nodeId)].insert(c)
+        this.buckets[this.getBucketId(c.getPeerAddress().nodeId)].insert(c)
     }
 
     /**
@@ -96,7 +96,7 @@ class KademliaRoutingTable(
      */
     @Synchronized
     fun insert(n: PeerAddress) {
-        this.buckets!![this.getBucketId(n.nodeId)].insert(n)
+        this.buckets[this.getBucketId(n.nodeId)].insert(n)
     }
 
     /**
@@ -107,7 +107,7 @@ class KademliaRoutingTable(
      * @return Integer The bucket ID in which the given node should be placed.
      */
     fun getBucketId(nid: Number160?): Int {
-        val bId = this.localNode.nodeId!!.xor(nid).bitLength() - 1
+        val bId = this.localNode.nodeId!!.getDistance(nid) - 1
 
         /* If we are trying to insert a node into it's own routing table, then the bucket ID will be -1, so let's just keep it in bucket 0 */
         return if (bId < 0) 0 else bId
@@ -163,14 +163,14 @@ class KademliaRoutingTable(
         val bucketId = this.getBucketId(n.nodeId)
 
         /* Remove the contact from the bucket */
-        this.buckets!![bucketId].removeNode(n)
+        this.buckets[bucketId].removeNode(n)
     }
 
     @Synchronized
     override fun toString(): String {
         val sb = StringBuilder("\n ***************** \n")
         var totalContacts = 0
-        for (b in this.buckets!!) {
+        for (b in this.buckets) {
             if (b.numContacts() > 0) {
                 totalContacts += b.numContacts()
                 sb.append("# nodes in Bucket with depth ")

@@ -476,59 +476,15 @@ public final class Number160 extends Number implements Comparable<Number160> {
     }
 
     /**
-     * Counts the number of leading 0's in this NodeId
-     *
-     * @return Integer The number of leading 0's
-     */
-    public int getFirstSetBitIndex()
-    {
-        int prefixLength = 0;
-
-        for (byte b : this.toByteArray())
-        {
-            if (b == 0)
-            {
-                prefixLength += 8;
-            }
-            else
-            {
-                /* If the byte is not 0, we need to count how many MSBs are 0 */
-                int count = 0;
-                for (int i = 7; i >= 0; i--)
-                {
-                    boolean a = (b & (1 << i)) == 0;
-                    if (a)
-                    {
-                        count++;
-                    }
-                    else
-                    {
-                        break;   // Reset the count if we encounter a non-zero number
-                    }
-                }
-
-                /* Add the count of MSB 0s to the prefix length */
-                prefixLength += count;
-
-                /* Break here since we've now covered the MSB 0s */
-                break;
-            }
-        }
-        return prefixLength;
-    }
-
-    /**
      * Gets the distance from this ID to another ID
      *
-     * @param to
+     * @param to Another ID
      *
-     * @return Integer The distance
+     * @return The distance
      */
     public int getDistance(Number160 to)
     {
-         // Compute the xor of this and to
-         // Get the index i of the first set bit of the xor returned NodeId
-         // The distance between them is ID_LENGTH - i
-        return BITS - this.xor(to).getFirstSetBitIndex();
+         // Compute the xor of this and get bit length
+        return this.xor(to).bitLength();
     }
 }
